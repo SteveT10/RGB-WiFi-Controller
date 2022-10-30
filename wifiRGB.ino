@@ -5,24 +5,35 @@
 #include <WiFi.h>
 
 //Global constants
-#define OUT_PIN 4
-#define LED_TYPE WS2812
-#define COLOR_ORDER GRB
-#define NUM_LEDS 300
+#define OUT_PIN 4 //Choose output pin.
+#define LED_TYPE WS2812 //Set LED type.
+#define COLOR_ORDER GRB //Set color order.
+#define NUM_LEDS 300 //Change to fit your number of LEDs.
 
-#define SSID "yourSSID" //Enter network info
+#define SSID "yourSSID" 
 #define WIFI_PASS "yourPassword"
-#define WIFI_TIMEOUT 20000 //20 second to connect before timeout.
+#define WIFI_TIMEOUT 20000; //20 second timeout limit.
 
 //Global Variables
-AsyncWebServer SERVER(80); //Create Server object on port 80.
+/** Create Server object on port 80. */
+AsyncWebServer SERVER(80);
+
+/** Creates LEDs object*/
 CRGB leds[NUM_LEDS];
 
-//For moving LEDs through a strip
+/** Tracks current LED to change */
 int16_t rgbIndex = 1;
+
+/** Tracks how fast LED move along strip. */
 uint8_t travelSpd = 0;
+
+/** Whether or not the LEDs are traveling down strip. */
 bool reversedDir = 0;
+
+/** Holds memory of RGB Value to be moved. */
 CRGB ledStorage1;
+
+/** Holds memory of RGB value to be moved. */
 CRGB ledStorage2;
 
 void setup() {
@@ -122,9 +133,12 @@ void getServerFiles() {
 }
 
 void setUpServer() {
+  //Allow server to respond to get requests
   SERVER.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
     String outputId;
     uint8_t stateValue;
+    
+    //If there is a change in brightness, movement direction, movement speed.
     if (request->hasParam("output") && request->hasParam("state")) {
       outputId = request->getParam("output")->value();
       stateValue = (request->getParam("state")->value()).toInt();
@@ -138,6 +152,7 @@ void setUpServer() {
       } else {
         Serial.println("Unrecognized Output ID");
       }
+    //If there is a change in RGB values for LED section.
     } else if (request->hasParam("color") && request->hasParam("start")) {
       changeRgb((request->getParam("color")->value()),
                 (request->getParam("start")->value()).toInt(),

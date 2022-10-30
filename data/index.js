@@ -76,8 +76,8 @@ async function toggleDirection () {
  * Send a update to LED strips if any sliders, 
  * checkboxes, or single variable settings are changed.
  * 
- * @param {*} element is the html element to read.
- * @param {*} stateNum is the state value to set
+ * @param {HTMLElement} element is the html element to read.
+ * @param {number} stateNum is the state value to set
  */
 async function sendUpdate (element, stateNum) {
   // console.log(`Changed ${element.id} to ${stateNum}.`);
